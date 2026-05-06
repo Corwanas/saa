@@ -15,34 +15,6 @@ local ThemeManager = {} do
 		['Quartz'] 			= { 8, httpService:JSONDecode('{"FontColor":"ffffff","MainColor":"232330","AccentColor":"426e87","BackgroundColor":"1d1b26","OutlineColor":"27232f","GlowColor":"426e87"}') },
 	}
 
-	-- Helper function to generate random color
-	function ThemeManager:GetRandomColor()
-		return Color3.fromHSV(math.random(), 0.7 + math.random() * 0.3, 0.8 + math.random() * 0.2)
-	end
-
-	-- Function to randomize all colors
-	function ThemeManager:RandomizeAllColors()
-		local colorFields = { "FontColor", "MainColor", "AccentColor", "BackgroundColor", "OutlineColor", "GlowColor" }
-		
-		for _, field in next, colorFields do
-			if Options[field] then
-				local randomColor = self:GetRandomColor()
-				Options[field]:SetValueRGB(randomColor)
-			end
-		end
-		
-		self.Library:Notify('Colors randomized!', 2)
-	end
-
-	-- Function to randomize specific color category
-	function ThemeManager:RandomizeColorCategory(category)
-		if Options[category] then
-			local randomColor = self:GetRandomColor()
-			Options[category]:SetValueRGB(randomColor)
-			self.Library:Notify(string.format('%s randomized!', category), 2)
-		end
-	end
-
 	function ThemeManager:ApplyTheme(theme)
 		local customThemeData = self:GetCustomTheme(theme)
 		local data = customThemeData or self.BuiltInThemes[theme]
@@ -132,35 +104,6 @@ local ThemeManager = {} do
 		groupbox:AddLabel('Outline color'):AddColorPicker('OutlineColor', { Default = self.Library.OutlineColor });
 		groupbox:AddLabel('Font color')	:AddColorPicker('FontColor', { Default = self.Library.FontColor });
 		groupbox:AddLabel('Glow color')	:AddColorPicker('GlowColor', { Default = self.Library.GlowColor or self.Library.AccentColor });
-
-		-- Add Randomize All Colors button
-		groupbox:AddDivider()
-		
-		-- Main Randomize All button
-		local RandomizeAllButton = groupbox:AddButton({
-			Text = 'Randomize Theme Colors',
-			Func = function()
-				self:RandomizeAllColors()
-			end,
-			Tooltip = 'Randomizes all color picker values'
-		})
-		
-		-- Add Sub-buttons for individual categories (makes it look nicer)
-		local SubButtonContainer = RandomizeAllButton:AddButton({
-			Text = 'Randomize Theme Colors Only',
-			Func = function()
-				local themeColors = { "MainColor", "AccentColor", "BackgroundColor", "OutlineColor" }
-				for _, field in next, themeColors do
-					if Options[field] then
-						local randomColor = self:GetRandomColor()
-						Options[field]:SetValueRGB(randomColor)
-					end
-				end
-				self.Library:Notify('Theme colors randomized!', 2)
-			end,
-			Tooltip = 'Randomizes Main, Accent, Background, and Outline colors'
-		})
-		
 
 		local ThemesArray = {}
 		for Name, Theme in next, self.BuiltInThemes do
